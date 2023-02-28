@@ -1,6 +1,5 @@
 import mss
 import mss.tools
-import pyperclip
 import pyautogui
 import re
 import pytesseract
