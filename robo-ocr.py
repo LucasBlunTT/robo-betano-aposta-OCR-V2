@@ -15,11 +15,15 @@ palavraPossivelEntrada = 'ATENÇÃO, POSSÍVEL ENTRADA'
 
 pytesseract.pytesseract.tesseract_cmd = caminho + r"\tesseract.exe"
 
+#pyautogui.mouseInfo()
+
 def jogar():
-    #pyautogui.moveTo(3038,840) # entrada betano
-    pyautogui.moveTo(3105,654)
+    pyautogui.moveTo(3025,855) # Entrada betano
+    #pyautogui.moveTo(3105,654) # Entrada de testes
     pyautogui.click()
     print('...::: ENTROU COM A APOSTA :::...')
+    sleep(1)
+    analisaGreen()
     
 def extrairImagem():    
     with mss.mss() as sct:
@@ -45,8 +49,28 @@ def extrairImagem():
         mss.tools.to_png(sct_img.rgb, sct_img.size, output=output)
         print(output)
         sleep(1)
+
+def analisaGreen():
+    while(True):
+        extrairImagem()            
+        imagem = cv2.imread("entrada.png")
+        # Converte a imagem para o formato de texto usando o pytesseract
+        textoGreen = pytesseract.image_to_string(imagem, lang="por")
+        
+        #confirmacaoGreen = re.findall(r'\bGREEN\b', textoGreen)
+        fogueteFinalizado = re.findall(r'\bFoguetinho finalizado\b', textoGreen) 
+        
+        #print(confirmacaoGreen)
+        print(fogueteFinalizado)
+        
+        #if len(confirmacaoGreen) != 0 and len(fogueteFinalizado) != 0:
+        if len(fogueteFinalizado) != 0:
+            break
+        else:
+             print('...::: VERIFICANDO GREEN :::...')
+        
     
-while (True):
+while(True):
     extrairImagem()    
     
     imagem = cv2.imread("entrada.png")
@@ -57,7 +81,7 @@ while (True):
     entrada = re.findall(r'\bEntrada\b', texto) 
     odd = re.findall(r'\d+\.\d+', texto)   
     
-    if  len(confirmacaoFoguete) != 0 and len(entrada) != 0 and len(odd) != 0:
+    if len(confirmacaoFoguete) != 0 and len(entrada) != 0 and len(odd) != 0:
         variavelFoguete = confirmacaoFoguete[0]
         variavelEntrada = entrada[0] 
         variavelOdd = odd[0]
