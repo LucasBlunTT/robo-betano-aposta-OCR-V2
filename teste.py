@@ -9,22 +9,21 @@ from time import sleep
 caminho = r"C:\Program Files\Tesseract-OCR"
 pytesseract.pytesseract.tesseract_cmd = caminho + r"\tesseract.exe"
 
-def extrairImagem():    
+def extrairImagemVela():    
     with mss.mss() as sct:
         # Get information of monitor 2
         monitor_number = 2
-        mon = sct.monitors[monitor_number]
 
         # The screen part to capture
         monitor = {
-            "top": 770,
-            "left": 3250,
+            "top": 300,
+            "left": 2100,
             "width": 558,
             "height": 230,
             "mon": monitor_number,
         }
-        #output = "sct-mon{mon}_{top}x{left}_{width}x{height}.png".format(**monitor)
-        output = "entrada.png".format(**monitor)
+        
+        output = "vela.png".format(**monitor)
 
         # Grab the data
         sct_img = sct.grab(monitor)
@@ -34,20 +33,20 @@ def extrairImagem():
         print(output)
         sleep(1)
 
+def analisaVela():   
+    
+    extrairImagemVela()            
+    
+    imagemVela = cv2.imread("vela.png")
+    # Converte a imagem para o formato de texto usando o pytesseract
+    conteudoVela = pytesseract.image_to_string(imagemVela, lang="por")
+    
+    print(conteudoVela)
 
-while(True):
-        extrairImagem()            
-        imagem = cv2.imread("entrada.png")
-        # Converte a imagem para o formato de texto usando o pytesseract
-        textoGreen = pytesseract.image_to_string(imagem, lang="por")
-        
-        confirmacaoGreen = re.findall(r'\bGREEN\b', textoGreen)
-        fogueteFinalizado = re.findall(r'\bFoguetinho finalizado\b', textoGreen) 
-        
-        print(confirmacaoGreen)
-        print(fogueteFinalizado)
-        
-        if len(confirmacaoGreen) != 0 and len(fogueteFinalizado) != 0:
-            break
-        else:
-             print('...::: VERIFICANDO GREEN :::...')
+    vooLonge = re.findall(r'\bVOOU PARA LONGE\b', conteudoVela) 
+    valorVela = re.findall(r'\d+\.\d+', conteudoVela) 
+    
+    print(vooLonge)
+    print(valorVela)
+    
+analisaVela()
