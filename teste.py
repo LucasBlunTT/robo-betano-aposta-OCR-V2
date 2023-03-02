@@ -39,38 +39,44 @@ def extrairImagemVelaVoou():
 def analisaVela():
     while(True):
         extrairImagemVelaVoou()
-        
+
         imagemVoou = cv2.imread("voou.png")
-    
+
         # Converte a imagem para o formato de texto usando o pytesseract
         imagemVoou = pytesseract.image_to_string(imagemVoou, lang="por")
 
         vooLonge = re.findall(r'\bVOOU PARA LONGE\b', imagemVoou)
         print(vooLonge)
-        
+
         if len(vooLonge) != 0:
             sleep(3)
-            pyautogui.moveTo(2473,369,duration=1)
+            pyautogui.moveTo(2473, 369)
             pyautogui.click()
-             
             sleep(1)
-            pyautogui.moveTo(2850,350)
-           
+            pyautogui.moveTo(2850, 350)
+
             pyautogui.doubleClick()
-            pyautogui.hotkey('ctrl','c')           
-            
-            oddCrash = pyperclip.paste()
-            oddCrash = re.findall(r'\d+\.\d+', oddCrash)    
-            oddCrash = float(oddCrash[0])
-            print(oddCrash)
-            
-            pyautogui.hotkey('enter')
-            
-            if(oddCrash < 2.00):
-                print("JOGANDO GALE")
+            pyautogui.hotkey('ctrl', 'c')
+            pyautogui.moveTo(3343,624)
+            pyautogui.click()        
+            oddCrash = pyperclip.paste()        
+            oddCrash = re.findall(r'\d+\.\d+', oddCrash)
+            if len(oddCrash) == 0:
+                print("ERRO AO DETECTAR ODD PARA FAZER GALE, RETORNANDO ANALISAR")
                 break
-                #jogarGale()
-        else:
-            print("VERIFICANDO NECESSIDADE DO GALE")
+            elif len(oddCrash) != 0:
+                oddCrash = float(oddCrash[0])
+                print(oddCrash)
+
+                if(oddCrash < 2.00):
+                    print("JOGANDO GALE")
+                  
+                    break
+                elif(oddCrash > 2.00):
+                    print("SEM NECESSIDADE DO GALE, VOLTANDO ANALISAR O GRUPO")
+                    break
+                else:
+                    print("VERIFICANDO NECESSIDADE DO GALE")
+
     
 analisaVela()
