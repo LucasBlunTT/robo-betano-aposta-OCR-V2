@@ -23,7 +23,6 @@ def jogar():
     pyautogui.moveTo(3044,846)  # Entrada de testes
     pyautogui.click()
     print('...::: ENTROU COM A APOSTA :::...')
-    sleep(1)
     # analisaGreen()
     analisaVela()
 
@@ -120,6 +119,7 @@ def analisaVela():
                 if(oddCrash < 2.00):
                     print("JOGANDO GALE")
                     jogarGale()
+                    analisaGreen()
                     break
                 elif(oddCrash > 2.00):
                     print("SEM NECESSIDADE DO GALE, VOLTANDO ANALISAR O GRUPO")
@@ -127,23 +127,23 @@ def analisaVela():
                 else:
                     print("VERIFICANDO NECESSIDADE DO GALE")
 
-# def analisaGreen():
-   # while(True):
-    #    extrairImagem()
-    #    imagem = cv2.imread("entrada.png")
-    #    # Converte a imagem para o formato de texto usando o pytesseract
-    #    textoGreen = pytesseract.image_to_string(imagem, lang="por")
-    #
-    #    fogueteFinalizado = re.findall(r'\bFoguetinho finalizado\b', textoGreen)
-    #
-    #    #print(confirmacaoGreen)
-    #    print(fogueteFinalizado)
-    #
-    #    #if len(confirmacaoGreen) != 0 and len(fogueteFinalizado) != 0:
-    #    if len(fogueteFinalizado) != 0:
-    #        break
-    #    else:
-    #         print('...::: VERIFICANDO GREEN :::...')
+def analisaGreen():
+    while(True):
+        extrairImagem()
+        imagem = cv2.imread("entrada.png")
+        # Converte a imagem para o formato de texto usando o pytesseract
+        textoGreen = pytesseract.image_to_string(imagem, lang="por")
+
+        fogueteFinalizado = re.findall(r'\bFoguetinho finalizado\b', textoGreen)
+
+        #print(confirmacaoGreen)
+        print(fogueteFinalizado)
+
+        #if len(confirmacaoGreen) != 0 and len(fogueteFinalizado) != 0:
+        if len(fogueteFinalizado) != 0:
+            break
+        else:
+                print('...::: VERIFICANDO GREEN :::...')
 
 while(True):
     extrairImagem()
