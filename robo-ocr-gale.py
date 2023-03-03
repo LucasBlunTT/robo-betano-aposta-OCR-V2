@@ -12,6 +12,10 @@ pytesseract.pytesseract.tesseract_cmd = caminho + r"\tesseract.exe"
 
 # pyautogui.mouseInfo()
 
+def incrementaRed(numero):
+    contadorRed =+ numero
+    return contadorRed
+    
 def jogar():
     pyautogui.moveTo(3025, 855)  # Entrada betano
     pyautogui.click()
@@ -117,7 +121,9 @@ def analisaVela():
                     break
                 elif oddCrash > 2.00:
                     oddCrash = None
+                    incrementaRed(0)
                     print("SEM NECESSIDADE DO GALE, VOLTANDO ANALISAR O GRUPO")
+                    sleep(7)
                     break
                 else:
                     print("VERIFICANDO NECESSIDADE DO GALE")
@@ -131,12 +137,22 @@ def analisaGreen():
         textoGreen = pytesseract.image_to_string(imagem, lang="por")
 
         fogueteFinalizado = re.findall(r"\bFoguetinho finalizado\b", textoGreen)
+        red = re.findall(r"\bRed\b", textoGreen)
+        pipes = re.findall(r"\|", textoGreen)
 
-        if len(fogueteFinalizado) != 0:
+        if len(fogueteFinalizado) != 0 and len(pipes) >= 2 and len(red) == 1:
+            incrementaRed(1)
+            if(incrementaRed() == 3):
+                print("CHEGOU AO TOTAL DE 3 RED. ROBO VOLTARA EM 1 HORA!")
+                esperaUmaHora()       
+            break
+        elif len(fogueteFinalizado) != 0 and len(red) == 0 and len(pipes) == 1 or len(pipes) == 0:
             break
         else:
             print("...::: VERIFICANDO GREEN :::...")
-
+            
+def esperaUmaHora():
+    sleep(3600)
 
 while True:
     extrairImagem()
