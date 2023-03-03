@@ -25,6 +25,7 @@ def jogarGale():
     pyautogui.moveTo(3025, 855)  # Entrada betano
     pyautogui.click()
     print("...::: ENTROU COM O GALE :::...")
+    analisaGreen()
 
 
 def extrairImagem():
@@ -112,7 +113,7 @@ def analisaVela():
                 if oddCrash < 2.00:
                     oddCrash = None
                     print("JOGANDO GALE")
-
+                    jogarGale()
                     break
                 elif oddCrash > 2.00:
                     oddCrash = None
