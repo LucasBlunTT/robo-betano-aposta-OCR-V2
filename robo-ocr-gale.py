@@ -8,30 +8,23 @@ import pyperclip
 from time import sleep
 
 caminho = r"C:\Program Files\Tesseract-OCR"
-palavraEntrada = 'Entrada'
-palavraGreen = 'GREEN'
-palavraFogueteConfirmado = 'Foguetinho confirmado'
-palavraRed = 'Red'
-palavraPossivelEntrada = 'ATENÇÃO, POSSÍVEL ENTRADA'
-
 pytesseract.pytesseract.tesseract_cmd = caminho + r"\tesseract.exe"
 
-#pyautogui.mouseInfo()
+# pyautogui.mouseInfo()
 
 def jogar():
-    # pyautogui.moveTo(3025,855) # Entrada betano
-    pyautogui.moveTo(3044,846)  # Entrada de testes
+    pyautogui.moveTo(3025, 855)  # Entrada betano
     pyautogui.click()
-    print('...::: ENTROU COM A APOSTA :::...')
-    # analisaGreen()
+    print("...::: ENTROU COM A APOSTA :::...")
+
+    sleep(2.5)
     analisaVela()
 
 
 def jogarGale():
-    # pyautogui.moveTo(3025,855) # Entrada betano
-    pyautogui.moveTo(3044,846)  # Entrada de testes
+    pyautogui.moveTo(3025, 855)  # Entrada betano
     pyautogui.click()
-    print('...::: ENTROU COM O GALE :::...')
+    print("...::: ENTROU COM O GALE :::...")
 
 
 def extrairImagem():
@@ -55,8 +48,7 @@ def extrairImagem():
 
         # Save to the picture file
         mss.tools.to_png(sct_img.rgb, sct_img.size, output=output)
-        print(output)
-        sleep(1)
+        # sleep(1)
 
 
 def extrairImagemVelaVoou():
@@ -80,12 +72,11 @@ def extrairImagemVelaVoou():
 
         # Save to the picture file
         mss.tools.to_png(sct_img.rgb, sct_img.size, output=output)
-        print(output)
-        sleep(1)
+        # sleep(1)
 
 
 def analisaVela():
-    while(True):
+    while True:
         extrairImagemVelaVoou()
 
         imagemVoou = cv2.imread("voou.png")
@@ -93,77 +84,73 @@ def analisaVela():
         # Converte a imagem para o formato de texto usando o pytesseract
         imagemVoou = pytesseract.image_to_string(imagemVoou, lang="por")
 
-        vooLonge = re.findall(r'\bVOOU PARA LONGE\b', imagemVoou)
-        print(vooLonge)
+        vooLonge = re.findall(r"\bVOOU PARA LONGE\b", imagemVoou)
+        print("ESPERANDO A VELA TERMINAR DE SUBIR")
 
         if len(vooLonge) != 0:
-            sleep(3)
-            pyautogui.moveTo(2473, 369)
-            pyautogui.click()
+            pyautogui.click(2933, 564)
+            pyautogui.hotkey("f12")
             sleep(1)
-            pyautogui.moveTo(2850, 350)
-
-            pyautogui.doubleClick()
-            pyautogui.hotkey('ctrl', 'c')
-            pyautogui.moveTo(3343,624)
-            pyautogui.click()        
-            oddCrash = pyperclip.paste()        
-            oddCrash = re.findall(r'\d+\.\d+', oddCrash)
+            pyautogui.click(3306, 166)
+            sleep(1)
+            pyautogui.click(2470, 450)
+            sleep(1)
+            pyautogui.click(3479, 465)
+            sleep(1)
+            pyautogui.hotkey("ctrl", "c")
+            oddCrash = pyperclip.paste()
+            pyautogui.hotkey("f12")
+            oddCrash = re.findall(r"\d+\.\d+", oddCrash)
+            print("ODD NO ARRAY")
+            print(oddCrash)
             if len(oddCrash) == 0:
+                oddCrash = None
                 print("ERRO AO DETECTAR ODD PARA FAZER GALE, RETORNANDO ANALISAR")
                 break
             elif len(oddCrash) != 0:
                 oddCrash = float(oddCrash[0])
-                print(oddCrash)
-
-                if(oddCrash < 2.00):
+                if oddCrash < 2.00:
+                    oddCrash = None
                     print("JOGANDO GALE")
-                    jogarGale()
-                    analisaGreen()
+
                     break
-                elif(oddCrash > 2.00):
+                elif oddCrash > 2.00:
+                    oddCrash = None
                     print("SEM NECESSIDADE DO GALE, VOLTANDO ANALISAR O GRUPO")
                     break
                 else:
                     print("VERIFICANDO NECESSIDADE DO GALE")
 
+
 def analisaGreen():
-    while(True):
+    while True:
         extrairImagem()
         imagem = cv2.imread("entrada.png")
         # Converte a imagem para o formato de texto usando o pytesseract
         textoGreen = pytesseract.image_to_string(imagem, lang="por")
 
-        fogueteFinalizado = re.findall(r'\bFoguetinho finalizado\b', textoGreen)
+        fogueteFinalizado = re.findall(r"\bFoguetinho finalizado\b", textoGreen)
 
-        #print(confirmacaoGreen)
-        print(fogueteFinalizado)
-
-        #if len(confirmacaoGreen) != 0 and len(fogueteFinalizado) != 0:
         if len(fogueteFinalizado) != 0:
             break
         else:
-                print('...::: VERIFICANDO GREEN :::...')
+            print("...::: VERIFICANDO GREEN :::...")
 
-while(True):
+
+while True:
     extrairImagem()
 
     imagem = cv2.imread("entrada.png")
     # Converte a imagem para o formato de texto usando o pytesseract
     texto = pytesseract.image_to_string(imagem, lang="por")
-    print(texto)
-    confirmacaoFoguete = re.findall(r'\bFoguetinho confirmado\b', texto)
-    entrada = re.findall(r'\bEntrada\b', texto)
-    odd = re.findall(r'\d+\.\d+', texto)
+    confirmacaoFoguete = re.findall(r"\bFoguetinho confirmado\b", texto)
+    entrada = re.findall(r"\bEntrada\b", texto)
+    odd = re.findall(r"\d+\.\d+", texto)
 
     if len(confirmacaoFoguete) != 0 and len(entrada) != 0 and len(odd) != 0:
         variavelFoguete = confirmacaoFoguete[0]
         variavelEntrada = entrada[0]
         variavelOdd = odd[0]
-
-        print(variavelFoguete)
-        print(variavelEntrada)
-        print(variavelOdd)
 
         jogar()
     else:
