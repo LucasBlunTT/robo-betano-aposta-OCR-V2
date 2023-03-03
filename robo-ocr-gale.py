@@ -94,8 +94,9 @@ def analisaVela():
 
         if len(vooLonge) != 0:
             pyautogui.click(2933, 564)
-            pyautogui.hotkey("f12")
             sleep(1)
+            pyautogui.hotkey("f12")
+            sleep(2)
             pyautogui.click(3306, 166)
             sleep(1)
             pyautogui.click(2470, 450)
@@ -142,6 +143,7 @@ def analisaGreen():
 
         if len(fogueteFinalizado) != 0 and len(pipes) >= 2 and len(red) == 1:
             incrementaRed(1)
+            print("DEU UM RED")
             if(incrementaRed() == 3):
                 print("CHEGOU AO TOTAL DE 3 RED. ROBO VOLTARA EM 1 HORA!")
                 esperaUmaHora()       
