@@ -10,11 +10,8 @@ from time import sleep
 caminho = r"C:\Program Files\Tesseract-OCR"
 pytesseract.pytesseract.tesseract_cmd = caminho + r"\tesseract.exe"
 
-# pyautogui.mouseInfo()
-
-def incrementaRed(numero):
-    contadorRed =+ numero
-    return contadorRed
+contadorRed = 0
+#pyautogui.mouseInfo()
     
 def jogar():
     pyautogui.moveTo(3025, 855)  # Entrada betano
@@ -33,6 +30,7 @@ def jogarGale():
 
 
 def extrairImagem():
+    sleep(1)
     with mss.mss() as sct:
         # Get information of monitor 2
         monitor_number = 2
@@ -81,6 +79,7 @@ def extrairImagemVelaVoou():
 
 
 def analisaVela():
+    global contadorRed
     while True:
         extrairImagemVelaVoou()
 
@@ -93,19 +92,19 @@ def analisaVela():
         print("ESPERANDO A VELA TERMINAR DE SUBIR")
 
         if len(vooLonge) != 0:
-            pyautogui.click(2933, 564)
+            pyautogui.click(2933, 564) #Click na tela só para focalizar
             sleep(1)
-            pyautogui.hotkey("f12")
+            pyautogui.hotkey("f12") #Hotkey para abrir o DEVTOOLS
             sleep(2)
-            pyautogui.click(3306, 166)
+            pyautogui.click(3308,158) #Clickando na ferramenta de seleção do DEVTOOLS
             sleep(1)
-            pyautogui.click(2470, 450)
+            pyautogui.click(2455,371) #Clicando na ODD
             sleep(1)
-            pyautogui.click(3479, 465)
+            pyautogui.click(3419,408) #Clicando no campo que a ODD está no DEVTOOLS
             sleep(1)
             pyautogui.hotkey("ctrl", "c")
-            oddCrash = pyperclip.paste()
             pyautogui.hotkey("f12")
+            oddCrash = pyperclip.paste()            
             oddCrash = re.findall(r"\d+\.\d+", oddCrash)
             print("ODD NO ARRAY")
             print(oddCrash)
@@ -122,7 +121,7 @@ def analisaVela():
                     break
                 elif oddCrash > 2.00:
                     oddCrash = None
-                    incrementaRed(0)
+                    contadorRed = 0
                     print("SEM NECESSIDADE DO GALE, VOLTANDO ANALISAR O GRUPO")
                     sleep(7)
                     break
@@ -131,6 +130,7 @@ def analisaVela():
 
 
 def analisaGreen():
+    global contadorRed
     while True:
         extrairImagem()
         imagem = cv2.imread("entrada.png")
@@ -142,11 +142,13 @@ def analisaGreen():
         pipes = re.findall(r"\|", textoGreen)
 
         if len(fogueteFinalizado) != 0 and len(pipes) >= 2 and len(red) == 1:
-            incrementaRed(1)
+            contadorRed +=1
             print("DEU UM RED")
-            if(incrementaRed() == 3):
+            print(contadorRed)
+            if(contadorRed == 3):
+                contadorRed = 0         
                 print("CHEGOU AO TOTAL DE 3 RED. ROBO VOLTARA EM 1 HORA!")
-                esperaUmaHora()       
+                esperaUmaHora()
             break
         elif len(fogueteFinalizado) != 0 and len(red) == 0 and len(pipes) == 1 or len(pipes) == 0:
             break
