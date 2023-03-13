@@ -10,24 +10,40 @@ from time import sleep
 caminho = r"C:\Program Files\Tesseract-OCR"
 pytesseract.pytesseract.tesseract_cmd = caminho + r"\tesseract.exe"
 
-contadorRed = 0
-#pyautogui.mouseInfo()
+contadorGale = 0
     
 def jogar():
-    pyautogui.moveTo(3025, 855)  # Entrada betano
+    pyautogui.moveTo(529,759)  # Entrada betano
     pyautogui.click()
     print("...::: ENTROU COM A APOSTA :::...")
 
-    sleep(2.5)
+    sleep(3)
     analisaVela()
 
-
 def jogarGale():
-    pyautogui.moveTo(3025, 855)  # Entrada betano
-    pyautogui.click()
+    sleep(1.7)
+    global contadorGale
+    
+    contadorGale +=1
+    
+    if(contadorGale == 1):
+        print("Fez G1")
+        pyautogui.click(334,738)
+        pyautogui.click(334,738)
+        pyautogui.moveTo(529,759)  # Entrada betano
+        pyautogui.click()
+   # elif(contadorGale == 2):
+   #     print("Fez G2")
+   #     pyautogui.click(334,738, duration=0.5)
+   #     sleep(0.5)
+   #     pyautogui.click(334,738, duration=0.5)
+   #     pyautogui.moveTo(529,759)  # Entrada betano
+   #     pyautogui.click()
+            
+    
     print("...::: ENTROU COM O GALE :::...")
-    analisaGreen()
-
+    sleep(4.5)
+    analisaVela()
 
 def extrairImagem():
     sleep(1)
@@ -37,8 +53,8 @@ def extrairImagem():
 
         # The screen part to capture
         monitor = {
-            "top": 770,
-            "left": 3250,
+            "top": 750,
+            "left": 950,
             "width": 558,
             "height": 230,
             "mon": monitor_number,
@@ -52,8 +68,12 @@ def extrairImagem():
         # Save to the picture file
         mss.tools.to_png(sct_img.rgb, sct_img.size, output=output)
         # sleep(1)
-
-
+        
+def zeraGale():
+    print("Zerando entrada BETANO")
+    pyautogui.click(207,739)
+    pyautogui.click(207,739)
+    
 def extrairImagemVelaVoou():
     with mss.mss() as sct:
         # Get information of monitor 2
@@ -61,8 +81,8 @@ def extrairImagemVelaVoou():
 
         # The screen part to capture
         monitor = {
-            "top": 355,
-            "left": 2200,
+            "top": 435,
+            "left": 295,
             "width": 296,
             "height": 140,
             "mon": monitor_number,
@@ -77,10 +97,13 @@ def extrairImagemVelaVoou():
         mss.tools.to_png(sct_img.rgb, sct_img.size, output=output)
         # sleep(1)
 
-
 def analisaVela():
-    global contadorRed
     while True:
+        global contadorGale
+        if (contadorGale == 1):     
+            analisaGale()
+            break
+        
         extrairImagemVelaVoou()
 
         imagemVoou = cv2.imread("voou.png")
@@ -92,17 +115,12 @@ def analisaVela():
         print("ESPERANDO A VELA TERMINAR DE SUBIR")
 
         if len(vooLonge) != 0:
-            pyautogui.click(2933, 564) #Click na tela só para focalizar
-            sleep(1)
-            pyautogui.hotkey("f12") #Hotkey para abrir o DEVTOOLS
-            sleep(2)
-            pyautogui.click(3308,158) #Clickando na ferramenta de seleção do DEVTOOLS
-            sleep(1)
-            pyautogui.click(2455,371) #Clicando na ODD
-            sleep(1)
-            pyautogui.click(3419,408) #Clicando no campo que a ODD está no DEVTOOLS
-            sleep(1)
-            pyautogui.hotkey("ctrl", "c")
+            pyautogui.click(431,512) #Click na tela só para focalizar               
+            pyautogui.hotkey("ctrl", "shift", "c") #Hotkey para abrir o DEVTOOLS  
+            sleep(2)       
+            pyautogui.click(64,451) #Movendo até a odd
+            sleep(2)          
+            pyautogui.hotkey("ctrl", "c")  #Copia a ODD
             pyautogui.hotkey("f12")
             oddCrash = pyperclip.paste()            
             oddCrash = re.findall(r"\d+\.\d+", oddCrash)
@@ -113,16 +131,17 @@ def analisaVela():
                 print("ERRO AO DETECTAR ODD PARA FAZER GALE, RETORNANDO ANALISAR")
                 break
             elif len(oddCrash) != 0:
-                oddCrash = float(oddCrash[0])
-                if oddCrash < 2.00:
+                oddCrash = float(oddCrash[0])                
+                if oddCrash < 1.50:
                     oddCrash = None
                     print("JOGANDO GALE")
                     jogarGale()
                     break
-                elif oddCrash > 2.00:
-                    oddCrash = None
-                    contadorRed = 0
+                elif oddCrash > 1.50:
+                    contadorGale = 0
+                    oddCrash = None              
                     print("SEM NECESSIDADE DO GALE, VOLTANDO ANALISAR O GRUPO")
+                    analisaGreen()
                     sleep(7)
                     break
                 else:
@@ -130,7 +149,8 @@ def analisaVela():
 
 
 def analisaGreen():
-    global contadorRed
+    global contadorGale
+    contadorGale = 0
     while True:
         extrairImagem()
         imagem = cv2.imread("entrada.png")
@@ -139,24 +159,31 @@ def analisaGreen():
 
         fogueteFinalizado = re.findall(r"\bFoguetinho finalizado\b", textoGreen)
         red = re.findall(r"\bRed\b", textoGreen)
-        pipes = re.findall(r"\|", textoGreen)
+        #pipes = re.findall(r"\|", textoGreen)
 
-        if len(fogueteFinalizado) != 0 and len(pipes) >= 2 and len(red) == 1:
-            contadorRed +=1
-            print("DEU UM RED")
-            print(contadorRed)
-            if(contadorRed == 3):
-                contadorRed = 0         
-                print("CHEGOU AO TOTAL DE 3 RED. ROBO VOLTARA EM 1 HORA!")
-                esperaUmaHora()
-            break
-        elif len(fogueteFinalizado) != 0 and len(red) == 0 and len(pipes) == 1 or len(pipes) == 0:
-            break
+        if len(fogueteFinalizado) != 0 or len(red) != 0:
+            break       
         else:
             print("...::: VERIFICANDO GREEN :::...")
             
-def esperaUmaHora():
-    sleep(3600)
+def analisaGale():
+    global contadorGale
+    contadorGale = 0
+    while True:
+        extrairImagem()
+        imagem = cv2.imread("entrada.png")
+        # Converte a imagem para o formato de texto usando o pytesseract
+        textoGreen = pytesseract.image_to_string(imagem, lang="por")
+
+        fogueteFinalizado = re.findall(r"\bFoguetinho finalizado\b", textoGreen)
+        red = re.findall(r"\bRed\b", textoGreen)
+        #pipes = re.findall(r"\|", textoGreen)
+
+        if len(fogueteFinalizado) != 0 or len(red) != 0:
+            zeraGale()
+            break       
+        else:
+            print("...::: VERIFICANDO GREEN :::...")                          
 
 while True:
     extrairImagem()
@@ -176,3 +203,7 @@ while True:
         jogar()
     else:
         print("ESPERANDO ENTRADA")
+        
+        
+#pyautogui.mouseInfo()
+        
