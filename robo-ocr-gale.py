@@ -6,6 +6,7 @@ import pytesseract
 import cv2
 import pyperclip
 from time import sleep
+import time
 
 caminho = r"C:\Program Files\Tesseract-OCR"
 pytesseract.pytesseract.tesseract_cmd = caminho + r"\tesseract.exe"
@@ -29,7 +30,7 @@ def jogarGale():
     if(contadorGale == 1):
         print("Fez G1")
         pyautogui.click(334,738)
-        pyautogui.click(334,738)
+        #pyautogui.click(334,738)
         pyautogui.moveTo(529,759)  # Entrada betano
         pyautogui.click()
    # elif(contadorGale == 2):
@@ -72,7 +73,7 @@ def extrairImagem():
 def zeraGale():
     print("Zerando entrada BETANO")
     pyautogui.click(207,739)
-    pyautogui.click(207,739)
+    #pyautogui.click(207,739)
     
 def extrairImagemVelaVoou():
     with mss.mss() as sct:
@@ -132,12 +133,12 @@ def analisaVela():
                 break
             elif len(oddCrash) != 0:
                 oddCrash = float(oddCrash[0])                
-                if oddCrash < 1.50:
+                if oddCrash < 2:
                     oddCrash = None
                     print("JOGANDO GALE")
                     jogarGale()
                     break
-                elif oddCrash > 1.50:
+                elif oddCrash > 2:
                     contadorGale = 0
                     oddCrash = None              
                     print("SEM NECESSIDADE DO GALE, VOLTANDO ANALISAR O GRUPO")
@@ -149,6 +150,8 @@ def analisaVela():
 
 
 def analisaGreen():
+   # tempo_inicial = time.time()
+  #  tempo_limite = 35  # 60 segundos
     global contadorGale
     contadorGale = 0
     while True:
@@ -159,14 +162,18 @@ def analisaGreen():
 
         fogueteFinalizado = re.findall(r"\bFoguetinho finalizado\b", textoGreen)
         red = re.findall(r"\bRed\b", textoGreen)
-        #pipes = re.findall(r"\|", textoGreen)
 
         if len(fogueteFinalizado) != 0 or len(red) != 0:
-            break       
+            break  
+       # elif time.time() - tempo_inicial > tempo_limite:
+       #     print("Tempo limite atingido")
+        #    break
         else:
             print("...::: VERIFICANDO GREEN :::...")
             
 def analisaGale():
+    #tempo_inicial = time.time()
+    #tempo_limite = 35  # 60 segundos
     global contadorGale
     contadorGale = 0
     while True:
@@ -176,12 +183,15 @@ def analisaGale():
         textoGreen = pytesseract.image_to_string(imagem, lang="por")
 
         fogueteFinalizado = re.findall(r"\bFoguetinho finalizado\b", textoGreen)
-        red = re.findall(r"\bRed\b", textoGreen)
-        #pipes = re.findall(r"\|", textoGreen)
-
+        red = re.findall(r"\bRed\b", textoGreen)        
+        
         if len(fogueteFinalizado) != 0 or len(red) != 0:
             zeraGale()
-            break       
+            break
+        #elif time.time() - tempo_inicial > tempo_limite:
+       #     print("Tempo limite atingido")
+        #    zeraGale()
+        #    break       
         else:
             print("...::: VERIFICANDO GREEN :::...")                          
 
@@ -204,6 +214,4 @@ while True:
     else:
         print("ESPERANDO ENTRADA")
         
-        
 #pyautogui.mouseInfo()
-        
